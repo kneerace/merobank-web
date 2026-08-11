@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
+import { AccountReviewMfe } from './components/account-review'
 import './App.css'
 
 function Home() {
@@ -26,7 +27,7 @@ function App() {
         <main className="content">
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/accounts" element={<div>Account MFE loads here</div>} />
+            <Route path="/accounts" element={<AccountReviewMfe mode="work" />} />
             <Route path="/payments" element={<div>Payment Task MFE loads here</div>} />
           </Routes>
         </main>
