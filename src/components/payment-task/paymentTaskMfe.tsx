@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import PaymentTask from './paymentTask'
 import { generateMockPayments, generateMockTask } from './mockDataGenerator'
 import type { Payment, CamundaTask, PaymentTaskProps, ReviewDecision } from './types'
+import { logger } from '../../utils/logger'
 
 const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true'
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:8080'
@@ -17,6 +18,7 @@ function PaymentTaskMfe({ mode = 'view' }: PaymentTaskProps) {
 
   useEffect(() => {
     if (USE_MOCK) {
+        logger.info('PaymentTaskMfe: fetching accounts', { mock: USE_MOCK })
       const mockPayments = generateMockPayments()
       const mockTasks: Record<string, CamundaTask> = {}
       mockPayments.forEach(p => {
@@ -61,6 +63,7 @@ function PaymentTaskMfe({ mode = 'view' }: PaymentTaskProps) {
       .catch(err => {
         setError(err.message)
         setLoading(false)
+        logger.error('PaymentTaskMfe: fetch failed', err)
       })
   }, [])
 
