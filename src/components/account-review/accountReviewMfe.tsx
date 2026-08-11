@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import AccountReview from './accountReview'
 import { generateMockAccounts } from './mockDataGenerator'
-// import { Account, AccountReviewProps } from './types'
 import type { Account, AccountReviewProps } from './types'
+import { logger } from '../../utils/logger'
 
 const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true'
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:8080'
@@ -15,6 +15,7 @@ function AccountReviewMfe({ mode = 'view' }: AccountReviewProps) {
 
   useEffect(() => {
     if (USE_MOCK) {
+        logger.info('AccountReviewMfe: fetching accounts', { mock: USE_MOCK })
       // use mock data for local development without backend
       setTimeout(() => {
         setAccounts(generateMockAccounts())
@@ -37,10 +38,12 @@ function AccountReviewMfe({ mode = 'view' }: AccountReviewProps) {
       .then(data => {
         setAccounts(data)
         setLoading(false)
+        logger.info('AccountReviewMfe: accounts loaded', { count: data.length })
       })
       .catch(err => {
         setError(err.message)
         setLoading(false)
+        logger.error('AccountReviewMfe: fetch failed', err)
       })
   }, [])
 
