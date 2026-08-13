@@ -30,6 +30,7 @@ function PaymentTaskMfe({ mode = 'view' }: PaymentTaskProps) {
         setPayments(mockPayments)
         setTasks(mockTasks)
         setLoading(false)
+        logger.info('PaymentTaskMfe: mock payments loaded', { count: mockPayments.length })
       }, 500)
       return
     }
@@ -41,6 +42,7 @@ function PaymentTaskMfe({ mode = 'view' }: PaymentTaskProps) {
       .then(res => res.json())
       .then(async (allPayments: Payment[]) => {
         const underReview = allPayments.filter(p => p.status === 'UNDER_REVIEW')
+        logger.info('PaymentTaskMfe: payments loaded', { underReview: underReview.length })
         setPayments(underReview)
 
         // fetch Camunda task for each payment
@@ -68,6 +70,8 @@ function PaymentTaskMfe({ mode = 'view' }: PaymentTaskProps) {
   }, [])
 
   const handleReview = async (taskId: string, decision: ReviewDecision) => {
+      logger.info('PaymentTaskMfe: submitting review decision', { taskId, decision })
+
     if (USE_MOCK) {
       alert(`Mock: Task ${taskId} ${decision}`)
       return
@@ -86,6 +90,7 @@ function PaymentTaskMfe({ mode = 'view' }: PaymentTaskProps) {
       // refresh payments after decision
       setPayments(prev => prev.filter(p => tasks[p.processInstanceId || '']?.id !== taskId))
     } catch (err) {
+         logger.error('PaymentTaskMfe: review submission failed', err)
       setError('Failed to submit review decision')
     }
   }
