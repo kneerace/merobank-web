@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import PaymentTask from './paymentTask'
 import { generateMockPayments, generateMockTask } from './mockDataGenerator'
 import type { Payment, CamundaTask, PaymentTaskProps, ReviewDecision } from './types'
+import { logger } from '../../utils/logger'
 
 const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true'
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:8080'
@@ -17,6 +18,7 @@ function PaymentTaskMfe({ mode = 'view' }: PaymentTaskProps) {
 
   useEffect(() => {
     if (USE_MOCK) {
+        logger.info('PaymentTaskMfe: fetching accounts', { mock: USE_MOCK })
       const mockPayments = generateMockPayments()
       const mockTasks: Record<string, CamundaTask> = {}
       mockPayments.forEach(p => {
@@ -28,6 +30,7 @@ function PaymentTaskMfe({ mode = 'view' }: PaymentTaskProps) {
         setPayments(mockPayments)
         setTasks(mockTasks)
         setLoading(false)
+        logger.info('PaymentTaskMfe: mock payments loaded', { count: mockPayments.length })
       }, 500)
       return
     }
@@ -39,6 +42,7 @@ function PaymentTaskMfe({ mode = 'view' }: PaymentTaskProps) {
       .then(res => res.json())
       .then(async (allPayments: Payment[]) => {
         const underReview = allPayments.filter(p => p.status === 'UNDER_REVIEW')
+        logger.info('PaymentTaskMfe: payments loaded', { underReview: underReview.length })
         setPayments(underReview)
 
         // fetch Camunda task for each payment
@@ -61,10 +65,13 @@ function PaymentTaskMfe({ mode = 'view' }: PaymentTaskProps) {
       .catch(err => {
         setError(err.message)
         setLoading(false)
+        logger.error('PaymentTaskMfe: fetch failed', err)
       })
   }, [])
 
   const handleReview = async (taskId: string, decision: ReviewDecision) => {
+      logger.info('PaymentTaskMfe: submitting review decision', { taskId, decision })
+
     if (USE_MOCK) {
       alert(`Mock: Task ${taskId} ${decision}`)
       return
@@ -83,6 +90,7 @@ function PaymentTaskMfe({ mode = 'view' }: PaymentTaskProps) {
       // refresh payments after decision
       setPayments(prev => prev.filter(p => tasks[p.processInstanceId || '']?.id !== taskId))
     } catch (err) {
+         logger.error('PaymentTaskMfe: review submission failed', err)
       setError('Failed to submit review decision')
     }
   }
