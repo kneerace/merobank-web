@@ -109,3 +109,69 @@ code {
   padding: 4px 8px;
   background: var(--code-bg);
 }
+
+.payment-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;  /* add this */
+}
+
+.payment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;  /* add this */
+  margin-bottom: 1rem;
+}
+
+.payment-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  background: white;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);  /* add this */
+}
+
+.payment-id {
+  font-weight: bold;
+  font-size: 1.1rem;
+  margin-right: 1rem;  /* add this */
+}
+
+.btn-approve {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 0.5rem 1.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.btn-deny {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 0.5rem 1.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.btn-approve:disabled,
+.btn-deny:disabled {
+  background: #999;
+  color: #eee;
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 0.5rem 1.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-bottom: 1rem;
+}

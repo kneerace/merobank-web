@@ -1,10 +1,8 @@
 import { useState, useEffect } from 'react'
 import PaymentTask from './paymentTask'
-import { generateMockPayments, generateMockTask } from './mockDataGenerator'
 import type { Payment, CamundaTask, PaymentTaskProps, ReviewDecision } from './types'
 import { logger } from '../../utils/logger'
 
-const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true'
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:8080'
 const CAMUNDA_BASE = import.meta.env.VITE_CAMUNDA_BASE || 'http://localhost:8082'
 
@@ -17,23 +15,9 @@ function PaymentTaskMfe({ mode = 'view' }: PaymentTaskProps) {
   const token = localStorage.getItem('merobank-token')
 
   useEffect(() => {
-    if (USE_MOCK) {
-        logger.info('PaymentTaskMfe: fetching accounts', { mock: USE_MOCK })
-      const mockPayments = generateMockPayments()
-      const mockTasks: Record<string, CamundaTask> = {}
-      mockPayments.forEach(p => {
-        if (p.processInstanceId) {
-          mockTasks[p.processInstanceId] = generateMockTask(p.processInstanceId)
-        }
-      })
-      setTimeout(() => {
-        setPayments(mockPayments)
-        setTasks(mockTasks)
-        setLoading(false)
-        logger.info('PaymentTaskMfe: mock payments loaded', { count: mockPayments.length })
-      }, 500)
-      return
-    }
+    logger.info('PaymentTaskMfe: fetching payments')
+
+    const token = localStorage.getItem('merobank-token')
 
     // fetch real UNDER_REVIEW payments from payment-service
     fetch(`${API_BASE}/api/payments`, {
@@ -71,11 +55,6 @@ function PaymentTaskMfe({ mode = 'view' }: PaymentTaskProps) {
 
   const handleReview = async (taskId: string, decision: ReviewDecision) => {
       logger.info('PaymentTaskMfe: submitting review decision', { taskId, decision })
-
-    if (USE_MOCK) {
-      alert(`Mock: Task ${taskId} ${decision}`)
-      return
-    }
 
     try {
       await fetch(`${CAMUNDA_BASE}/engine-rest/task/${taskId}/complete`, {
