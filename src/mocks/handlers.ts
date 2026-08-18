@@ -28,4 +28,21 @@ export const handlers = [
 
     return HttpResponse.json([generateMockTask(processInstanceId)])
   }),
+
+  http.post('http://localhost:8080/auth/login', async ({ request }) => {
+    const body = await request.json() as { username: string, password: string }
+
+    if (body.username === 'admin' && body.password === 'admin123') {
+      return HttpResponse.json({
+        token: 'mock-jwt-token-for-development',
+        username: 'admin',
+        message: 'Login successful'
+      })
+    }
+
+    return HttpResponse.json(
+      { error: 'Invalid credentials' },
+      { status: 401 }
+    )
+  })
 ]
